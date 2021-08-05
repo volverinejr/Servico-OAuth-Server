@@ -36,7 +36,7 @@ public class UsuarioService implements IUsuarioService, UserDetailsService {
 
 			return new User(username, usuario.getPassword(), usuario.getEnabled(), true, true, true, authorities);
 		} catch (FeignException e) {
-			tracer.currentSpan().tag("error.mensagem", username + " não encontrado!");
+			tracer.currentSpan().tag("login.error", username + " não encontrado!");
 			
 			throw new UsernameNotFoundException(username + " não encontrado!");
 		}
