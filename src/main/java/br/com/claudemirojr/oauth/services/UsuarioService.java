@@ -3,6 +3,8 @@ package br.com.claudemirojr.oauth.services;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -19,6 +21,9 @@ import feign.FeignException;
 
 @Service
 public class UsuarioService implements IUsuarioService, UserDetailsService {
+	
+	
+	private Logger log = LoggerFactory.getLogger(UsuarioService.class);
 
 	@Autowired
 	private UsuarioFeignClient client;
@@ -36,9 +41,13 @@ public class UsuarioService implements IUsuarioService, UserDetailsService {
 
 			return new User(username, usuario.getPassword(), usuario.getEnabled(), true, true, true, authorities);
 		} catch (FeignException e) {
-			tracer.currentSpan().tag("login.error", username + " não encontrado!");
+			String msgError = username + " não encontrado!";
 			
-			throw new UsernameNotFoundException(username + " não encontrado!");
+			log.info(msgError);
+			
+			tracer.currentSpan().tag("login.error", msgError);
+			
+			throw new UsernameNotFoundException(msgError);
 		}
 	}
 
